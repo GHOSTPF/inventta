@@ -13,8 +13,8 @@
         </div>
     </x-slot>
 
-    <x-card class="max-w-2xl"
-        x-data="{
+    <x-card class="max-w-2xl">
+      <div x-data="{
             type: '{{ old('type', $type) }}',
             reason: '{{ old('reason', $type === 'saida' ? 'venda' : 'compra') }}',
             product: '{{ old('product_id', $selected) }}',
@@ -99,5 +99,6 @@
                 <a href="{{ route('movements.index') }}" class="text-sm text-gray-500 hover:text-ink">Cancelar</a>
             </div>
         </form>
+      </div>
     </x-card>
 </x-app-layout>
