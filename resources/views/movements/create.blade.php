@@ -61,11 +61,16 @@
             <div class="grid gap-6 sm:grid-cols-2">
                 <div>
                     <x-input-label for="reason" value="Motivo" />
-                    <select id="reason" name="reason" x-model="reason" class="mt-1 block w-full rounded-lg border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500">
-                        <template x-for="(label, key) in reasons[type]" :key="key">
-                            <option :value="key" x-text="label" :selected="key === reason"></option>
-                        </template>
-                    </select>
+                    @foreach ($reasons as $reasonType => $options)
+                        <select @if ($loop->first) id="reason" @endif name="reason" x-model="reason"
+                                x-show="type === '{{ $reasonType }}'" :disabled="type !== '{{ $reasonType }}'"
+                                @disabled(old('type', $type) !== $reasonType) @if (old('type', $type) !== $reasonType) style="display: none" @endif
+                                class="mt-1 block w-full rounded-lg border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500">
+                            @foreach ($options as $key => $label)
+                                <option value="{{ $key }}" @selected(old('reason', $reasonType === 'saida' ? 'venda' : 'compra') === $key)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    @endforeach
                     <x-input-error :messages="$errors->get('reason')" class="mt-2" />
                 </div>
                 <div>
