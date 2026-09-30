@@ -10,10 +10,12 @@
         </a>
     </x-slot>
 
-    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        <x-stat label="Faturamento do mês" :value="brl($month['total'])" :hint="now()->translatedFormat('F \d\e Y')" />
+        <x-stat label="Lucro do mês" :value="brl($month['profit'])" :alert="$month['profit'] < 0" :hint="'Faturamento menos o custo dos produtos (' . brl($month['cost']) . ')'" />
+        <x-stat label="Margem de lucro" :value="number_format($month['margin'], 1, ',', '.') . '%'" :alert="$month['margin'] < 0" hint="Quanto de cada venda vira lucro" />
         <x-stat label="Itens em estoque" :value="number_format($totalItems, 0, ',', '.')" hint="Unidades somadas de todos os produtos" />
         <x-stat label="Valor do estoque" :value="brl($stockValue)" hint="A preço de custo" />
-        <x-stat label="Faturamento do mês" :value="brl($monthRevenue)" :hint="now()->translatedFormat('F \d\e Y')" />
         <x-stat label="Estoque baixo ou crítico" :value="$lowStockCount" :alert="$lowStockCount > 0" hint="Produtos no mínimo ou abaixo" />
     </div>
 
@@ -23,6 +25,10 @@
                 <div>
                     <h2 class="font-semibold text-ink">Faturamento</h2>
                     <p class="text-xs text-gray-400">{{ $chartReport->label() }}</p>
+                    <p class="mt-1 text-sm text-gray-500">
+                        {{ brl($chartSummary['total']) }} faturado ·
+                        <span class="font-medium {{ $chartSummary['profit'] < 0 ? 'text-red-600' : 'text-green-600' }}">{{ brl($chartSummary['profit']) }} de lucro</span>
+                    </p>
                 </div>
                 <div class="inline-flex rounded-lg bg-gray-100 p-1 text-sm">
                     @foreach (['day' => 'Dia', 'week' => 'Semana', 'month' => 'Mês'] as $key => $label)

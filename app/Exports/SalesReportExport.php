@@ -13,7 +13,7 @@ class SalesReportExport implements FromArray, ShouldAutoSize, WithHeadings
 
     public function headings(): array
     {
-        return ['Data', 'Produto', 'SKU', 'Quantidade', 'Preço unitário', 'Total'];
+        return ['Data', 'Produto', 'SKU', 'Quantidade', 'Preço unitário', 'Total', 'Custo unitário', 'Custo total', 'Lucro'];
     }
 
     public function array(): array
@@ -25,12 +25,16 @@ class SalesReportExport implements FromArray, ShouldAutoSize, WithHeadings
             $sale->quantity,
             (float) $sale->unit_price,
             $sale->line_total,
+            (float) $sale->unit_cost,
+            $sale->line_cost,
+            $sale->line_profit,
         ])->all();
 
         $summary = $this->report->summary();
         $rows[] = [];
-        $rows[] = ['Total faturado', '', '', $summary['units'], '', $summary['total']];
+        $rows[] = ['Total faturado', '', '', $summary['units'], '', $summary['total'], '', $summary['cost'], $summary['profit']];
         $rows[] = ['Ticket médio', '', '', '', '', round($summary['average_ticket'], 2)];
+        $rows[] = ['Margem de lucro (%)', '', '', '', '', round($summary['margin'], 1)];
 
         return $rows;
     }

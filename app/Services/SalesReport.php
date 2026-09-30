@@ -77,14 +77,19 @@ class SalesReport
             ->whereBetween('stock_movements.created_at', [$this->from, $this->to]);
     }
 
-    /** @return array{total: float, units: int, count: int, average_ticket: float} */
+    /**
+     * Lucro = faturamento - custo das mercadorias vendidas (custo unitário gravado na venda).
+     *
+     * @return array{total: float, units: int, count: int, average_ticket: float, cost: float, profit: float, margin: float}
+     */
     public function summary(): array
     {
         $row = $this->sales()
-            ->selectRaw('COALESCE(SUM(quantity * unit_price), 0) as total, COALESCE(SUM(quantity), 0) as units, COUNT(*) as count')
+            ->selectRaw('COALESCE(SUM(quantity * unit_price), 0) as total, COALESCE(SUM(quantity * COALESCE(unit_cost, 0)), 0) as cost, COALESCE(SUM(quantity), 0) as units, COUNT(*) as count')
             ->first();
 
         $total = (float) $row->total;
+        $cost = (float) $row->cost;
         $count = (int) $row->count;
 
         return [
@@ -92,6 +97,9 @@ class SalesReport
             'units' => (int) $row->units,
             'count' => $count,
             'average_ticket' => $count > 0 ? $total / $count : 0.0,
+            'cost' => $cost,
+            'profit' => $total - $cost,
+            'margin' => $total > 0 ? ($total - $cost) / $total * 100 : 0.0,
         ];
     }
 
@@ -113,6 +121,7 @@ class SalesReport
                 'products.sku',
                 DB::raw('SUM(stock_movements.quantity) as units'),
                 DB::raw('SUM(stock_movements.quantity * stock_movements.unit_price) as total'),
+                DB::raw('SUM(stock_movements.quantity * (stock_movements.unit_price - COALESCE(stock_movements.unit_cost, 0))) as profit'),
             ]);
     }
 

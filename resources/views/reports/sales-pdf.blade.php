@@ -34,9 +34,18 @@
         </tr>
     </table>
 
+    <table class="summary" style="margin-top: 8px;">
+        <tr>
+            <td><div class="label">Custo dos produtos</div><div class="value">{{ brl($summary['cost']) }}</div></td>
+            <td><div class="label">Lucro</div><div class="value">{{ brl($summary['profit']) }}</div></td>
+            <td><div class="label">Margem de lucro</div><div class="value">{{ number_format($summary['margin'], 1, ',', '.') }}%</div></td>
+            <td style="background: none;"></td>
+        </tr>
+    </table>
+
     <h2>Produtos mais vendidos</h2>
     <table class="data">
-        <thead><tr><th>#</th><th>Produto</th><th>SKU</th><th class="r">Unidades</th><th class="r">Faturamento</th></tr></thead>
+        <thead><tr><th>#</th><th>Produto</th><th>SKU</th><th class="r">Unidades</th><th class="r">Faturamento</th><th class="r">Lucro</th></tr></thead>
         <tbody>
             @forelse ($topProducts as $item)
                 <tr>
@@ -45,16 +54,17 @@
                     <td class="muted">{{ $item->sku }}</td>
                     <td class="r">{{ $item->units }}</td>
                     <td class="r">{{ brl($item->total) }}</td>
+                    <td class="r">{{ brl($item->profit) }}</td>
                 </tr>
             @empty
-                <tr><td colspan="5" class="muted">Sem vendas no período.</td></tr>
+                <tr><td colspan="6" class="muted">Sem vendas no período.</td></tr>
             @endforelse
         </tbody>
     </table>
 
     <h2>Vendas do período</h2>
     <table class="data">
-        <thead><tr><th>Data</th><th>Produto</th><th class="r">Qtd.</th><th class="r">Valor unit.</th><th class="r">Total</th></tr></thead>
+        <thead><tr><th>Data</th><th>Produto</th><th class="r">Qtd.</th><th class="r">Valor unit.</th><th class="r">Total</th><th class="r">Lucro</th></tr></thead>
         <tbody>
             @forelse ($lines as $sale)
                 <tr>
@@ -63,9 +73,10 @@
                     <td class="r">{{ $sale->quantity }}</td>
                     <td class="r">{{ brl($sale->unit_price) }}</td>
                     <td class="r">{{ brl($sale->line_total) }}</td>
+                    <td class="r">{{ brl($sale->line_profit) }}</td>
                 </tr>
             @empty
-                <tr><td colspan="5" class="muted">Sem vendas no período.</td></tr>
+                <tr><td colspan="6" class="muted">Sem vendas no período.</td></tr>
             @endforelse
         </tbody>
     </table>

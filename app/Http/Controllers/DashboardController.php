@@ -17,7 +17,7 @@ class DashboardController extends Controller
             ->first();
 
         $now = CarbonImmutable::now();
-        $monthRevenue = (new SalesReport('month', $now->startOfMonth(), $now->endOfMonth()))->summary()['total'];
+        $month = (new SalesReport('month', $now->startOfMonth(), $now->endOfMonth()))->summary();
 
         // O gráfico segue o filtro (dia/semana/mês); os cards são sempre do mês.
         $chartReport = SalesReport::fromRequest($request->merge([
@@ -27,7 +27,8 @@ class DashboardController extends Controller
         return view('dashboard', [
             'totalItems' => (int) $stock->items,
             'stockValue' => (float) $stock->value,
-            'monthRevenue' => $monthRevenue,
+            'month' => $month,
+            'chartSummary' => $chartReport->summary(),
             'lowStockCount' => Product::needsRestock()->count(),
             'lowStock' => Product::needsRestock()->with('category')->orderBy('quantity')->limit(6)->get(),
             'recentMovements' => StockMovement::with('product')->latest()->latest('id')->limit(6)->get(),

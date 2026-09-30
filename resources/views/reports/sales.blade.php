@@ -30,8 +30,10 @@
         </form>
     </x-card>
 
-    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
         <x-stat label="Total faturado" :value="brl($summary['total'])" />
+        <x-stat label="Lucro" :value="brl($summary['profit'])" :alert="$summary['profit'] < 0" :hint="'Faturamento menos o custo dos produtos (' . brl($summary['cost']) . ')'" />
+        <x-stat label="Margem de lucro" :value="number_format($summary['margin'], 1, ',', '.') . '%'" :alert="$summary['margin'] < 0" hint="Quanto de cada venda vira lucro" />
         <x-stat label="Ticket médio" :value="brl($summary['average_ticket'])" hint="Por venda registrada" />
         <x-stat label="Vendas" :value="number_format($summary['count'], 0, ',', '.')" />
         <x-stat label="Unidades vendidas" :value="number_format($summary['units'], 0, ',', '.')" />
@@ -55,7 +57,10 @@
                                 <span class="text-xs text-gray-400">{{ $item->units }} un.</span>
                             </div>
                         </div>
-                        <span class="whitespace-nowrap text-sm font-semibold text-ink">{{ brl($item->total) }}</span>
+                        <div class="text-right">
+                            <span class="block whitespace-nowrap text-sm font-semibold text-ink">{{ brl($item->total) }}</span>
+                            <span class="block whitespace-nowrap text-xs {{ $item->profit < 0 ? 'text-red-600' : 'text-green-600' }}">{{ brl($item->profit) }} de lucro</span>
+                        </div>
                     </li>
                 @empty
                     <li class="py-6 text-center text-sm text-gray-400">Sem vendas no período.</li>

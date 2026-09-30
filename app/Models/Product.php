@@ -69,6 +69,7 @@ class Product extends Model
                 'quantity' => $quantity,
                 'reason' => $reason,
                 'unit_price' => $unitPrice ?? ($reason === StockMovement::REASON_SALE ? $product->sale_price : $product->cost_price),
+                'unit_cost' => $product->cost_price,
                 'notes' => $notes,
                 'user_id' => $userId,
             ]);

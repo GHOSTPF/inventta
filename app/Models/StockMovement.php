@@ -19,13 +19,14 @@ class StockMovement extends Model
         self::TYPE_OUT => ['venda' => 'Venda', 'perda' => 'Perda / avaria', 'ajuste' => 'Ajuste de inventário'],
     ];
 
-    protected $fillable = ['product_id', 'type', 'quantity', 'reason', 'unit_price', 'notes', 'user_id'];
+    protected $fillable = ['product_id', 'type', 'quantity', 'reason', 'unit_price', 'unit_cost', 'notes', 'user_id'];
 
     protected function casts(): array
     {
         return [
             'quantity' => 'integer',
             'unit_price' => 'decimal:2',
+            'unit_cost' => 'decimal:2',
             'created_at' => 'datetime',
         ];
     }
@@ -48,5 +49,15 @@ class StockMovement extends Model
     public function getLineTotalAttribute(): float
     {
         return round($this->quantity * (float) $this->unit_price, 2);
+    }
+
+    public function getLineCostAttribute(): float
+    {
+        return round($this->quantity * (float) $this->unit_cost, 2);
+    }
+
+    public function getLineProfitAttribute(): float
+    {
+        return round($this->line_total - $this->line_cost, 2);
     }
 }

@@ -126,6 +126,21 @@ class InventoryTest extends TestCase
         $this->assertSame(3, $summary['units']);
         $this->assertSame(2, $summary['count']);
         $this->assertSame(150.0, $summary['average_ticket']);
+        $this->assertSame(120.0, $summary['cost']);   // 3 un. x 40
+        $this->assertSame(180.0, $summary['profit']);
+        $this->assertSame(60.0, $summary['margin']);
+    }
+
+    public function test_profit_uses_cost_at_time_of_sale(): void
+    {
+        $this->product->registerMovement('saida', 1, 'venda'); // custo 40
+        $this->product->update(['cost_price' => 70]);
+        $this->product->registerMovement('saida', 1, 'venda'); // custo 70
+
+        $summary = \App\Services\SalesReport::fromRequest(request()->merge(['period' => 'month']))->summary();
+
+        $this->assertSame(110.0, $summary['cost']);
+        $this->assertSame(90.0, $summary['profit']);
     }
 
     public function test_pages_and_exports_render(): void
